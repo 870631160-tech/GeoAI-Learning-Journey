@@ -17,5 +17,5 @@ while True:
     elif guess > target:
         print("太大了啦！！！")
     else:
-        print(f"猜对啦，一共猜了{count}次")
+        print(f"猜对啦，，一共猜了{count}次")
         break
