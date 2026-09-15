@@ -2,115 +2,76 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "上传到 GeoAI 学习库（默认）",
+      "detail": "提交改动并推送到 origin，也就是 GeoAI-Learning-Journey",
+      "type": "shell",
+      "command": "git add -A; $s = git status --porcelain; if ($s) { git commit -m '${input:commitMessage}' } else { Write-Host '没有新改动，直接上传' }; git push",
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "shared", "group": "git" },
+      "icon": { "id": "cloud-upload", "color": "terminal.ansiBlue" }
+    },
+    {
+      "label": "上传到练习库（for-testing-and-training）",
+      "detail": "同样的改动再推一份到 practice 这个远端",
+      "type": "shell",
+      "command": "git add -A; $s = git status --porcelain; if ($s) { git commit -m '${input:commitMessage}' } else { Write-Host '没有新改动，直接上传' }; git push practice main",
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "shared", "group": "git" },
+      "icon": { "id": "cloud-upload", "color": "terminal.ansiYellow" }
+    },
+    {
+      "label": "上传到两个库",
+      "detail": "一次把改动推到 GeoAI-Learning-Journey 和 for-testing-and-training",
+      "type": "shell",
+      "command": "git add -A; $s = git status --porcelain; if ($s) { git commit -m '${input:commitMessage}' } else { Write-Host '没有新改动，直接上传' }; git push; git push practice main",
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "shared", "group": "git" },
+      "icon": { "id": "cloud-upload", "color": "terminal.ansiGreen" }
+    },
+    {
+      "label": "我现在连的是哪个库",
+      "detail": "显示两个远端的地址和当前同步状态",
+      "type": "shell",
+      "command": "git remote -v; Write-Host ''; git status -sb",
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "shared", "group": "git" },
+      "icon": { "id": "question", "color": "terminal.ansiCyan" }
+    },
+    {
       "label": "DSH: 启动 Web GUI",
       "detail": "3080 端口已监听则直接打开页面，否则启动 dsh web（默认构建任务，Ctrl+Shift+B）",
       "type": "shell",
       "command": "if (Get-NetTCPConnection -LocalPort 3080 -State Listen -ErrorAction SilentlyContinue) { Write-Host 'DSH Web GUI 已在 3080 运行，正在打开页面...'; Start-Process 'http://127.0.0.1:3080' } else { Write-Host '正在启动 dsh web ...'; dsh web }",
       "isBackground": true,
       "problemMatcher": [],
-      "presentation": {
-        "reveal": "always",
-        "panel": "dedicated",
-        "clear": true,
-        "group": "dsh"
-      },
-      "icon": {
-        "id": "rocket",
-        "color": "terminal.ansiCyan"
-      },
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      }
+      "presentation": { "reveal": "always", "panel": "dedicated", "clear": true, "group": "dsh" },
+      "icon": { "id": "rocket", "color": "terminal.ansiCyan" },
+      "group": { "kind": "build", "isDefault": true }
     },
     {
       "label": "DSH: 重启 Web GUI",
-      "detail": "结束占用 3080 的进程，等 2 秒后重新启动 dsh web（用于加载新装的插件）",
+      "detail": "结束占用 3080 的进程，等 2 秒后重新启动 dsh web",
       "type": "shell",
       "command": "Get-NetTCPConnection -LocalPort 3080 -State Listen -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique | ForEach-Object { Write-Host ('停止 PID ' + $_); Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue }; Start-Sleep -Seconds 2; Write-Host '正在重新启动 dsh web ...'; dsh web",
       "isBackground": true,
       "problemMatcher": [],
-      "presentation": {
-        "reveal": "always",
-        "panel": "dedicated",
-        "clear": true,
-        "group": "dsh"
-      },
-      "icon": {
-        "id": "debug-restart",
-        "color": "terminal.ansiYellow"
-      }
+      "presentation": { "reveal": "always", "panel": "dedicated", "clear": true, "group": "dsh" },
+      "icon": { "id": "debug-restart", "color": "terminal.ansiYellow" }
     },
     {
       "label": "DSH: 打开 GUI 页面",
-      "detail": "用默认浏览器打开已启动的 DSH Web GUI",
       "type": "shell",
       "command": "Start-Process 'http://127.0.0.1:3080'",
       "problemMatcher": [],
-      "presentation": {
-        "reveal": "silent",
-        "panel": "shared",
-        "group": "dsh"
-      },
-      "icon": {
-        "id": "globe",
-        "color": "terminal.ansiGreen"
-      }
-    },
-    {
-      "label": "DSH: 查看 DSH 配置",
-      "detail": "打印当前 profile 的合成配置树后退出",
-      "type": "shell",
-      "command": "dsh --dump-config",
-      "problemMatcher": [],
-      "presentation": {
-        "reveal": "always",
-        "panel": "shared",
-        "group": "dsh"
-      },
-      "icon": {
-        "id": "settings-gear",
-        "color": "terminal.ansiYellow"
-      }
-    },
-    {
-      "label": "Git: 提交并推送",
-      "detail": "暂存全部改动，用输入的说明提交，然后推送",
-      "type": "shell",
-      "command": "git add -A; git commit -m '${input:commitMessage}'; git push",
-      "problemMatcher": [],
-      "presentation": {
-        "reveal": "always",
-        "panel": "shared",
-        "group": "git"
-      },
-      "icon": {
-        "id": "cloud-upload",
-        "color": "terminal.ansiBlue"
-      }
-    },
-    {
-      "label": "Git: 状态概览",
-      "detail": "查看分支状态与最近提交",
-      "type": "shell",
-      "command": "git status -sb; git log --oneline --graph --decorate -10",
-      "problemMatcher": [],
-      "presentation": {
-        "reveal": "always",
-        "panel": "shared",
-        "group": "git"
-      },
-      "icon": {
-        "id": "git-branch",
-        "color": "terminal.ansiMagenta"
-      }
+      "presentation": { "reveal": "silent", "panel": "shared", "group": "dsh" },
+      "icon": { "id": "globe", "color": "terminal.ansiGreen" }
     }
   ],
   "inputs": [
     {
       "id": "commitMessage",
       "type": "promptString",
-      "description": "提交说明",
+      "description": "这次改了什么？写一句话，比如：改了猜数字游戏",
       "default": "更新"
     }
   ]
